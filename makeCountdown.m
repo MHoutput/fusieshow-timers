@@ -42,7 +42,6 @@ function makeCountdown(start, increment, duration, filename, imagename)
     FPS = 30;
     frames = round(FPS.*duration+1,0);
     increase_per_frame = increment./FPS;
-    sgn = sign(increment);
     counter_value = start;
     numdigits = round(7/6.*log10(max(abs(start), abs(start + increment.*duration)))+1,0);
     
@@ -70,7 +69,7 @@ function makeCountdown(start, increment, duration, filename, imagename)
         ax_handle=axes('Color',[0,0,0], 'Position', [0.5*(1-new_width./expected_width) 0 new_width./expected_width 1]);
         imshow(image_array)
     else
-        ax_handle=axes('Color',[0.5,0.5,0.5], 'Position', [0 0 1 1]);
+        ax_handle=axes('Color',[0,0,0], 'Position', [0 0 1 1]);
     end
     xticks([]);
     yticks([]);
@@ -95,9 +94,11 @@ function makeCountdown(start, increment, duration, filename, imagename)
     imageNames = {imageNames.name}';
     videocodec.FrameRate = 30;
     open(videocodec)
+    imageSize = size(imread(fullfile(workDir,imageNames{1})),1:2);
     for i = 1:length(imageNames)
         img = imread(fullfile(workDir,imageNames{i}));
-        writeVideo(videocodec,img)
+        img_resized = imresize(img, imageSize); %Force all iamges to have the same size
+        writeVideo(videocodec,img_resized)
     end
     close(videocodec)
     
